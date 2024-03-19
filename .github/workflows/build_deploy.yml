@@ -1,26 +1,11 @@
-name: Test React App
+name: Deploy React App
+permissions:
+  contents: write
+  # permissions : autorisation d'écriture accordée pour les actions
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - "hotfix-*"
-      # déclenche le workflow lorsqu'un commit est effectué sur les branches contenant "hotfix-"
-      - "feature/**"
-      # déclenche le workflow lorsqu'un commit est effectué sur les branches contenant "feature/"
-    # différence en * et ** : * = 1 seul niveau, ** = plusieurs niveaux
-    path-ignore:
-      - "github/workflows/*"
-  # push: déclenche le workflow lorsqu'un commit est effectué sur les branches listées
-  # branches: liste des branches sur lesquelles le workflow est déclenché
-  # path-ignore: liste des chemins de fichiers à ignorer pour le déclenchement du workflow
-  pull_request:
-    types:
-      - opened
-  # pull_request: déclenche le workflow selon le type de pull request
-  # ici : déclenche le workflow lorsqu'une pull request est ouverte
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Code
@@ -36,6 +21,17 @@ jobs:
       - name: Install dependencies
         run: npm install
         # run: npm install : commande qui permet d'installer les dépendances du projet
-      - name: Tests
-        run: npm run test
-        # run: npm run test : commande qui permet de lancer les tests du projet
+      - name: Build
+        run: npm run build
+        # run: npm run build : commande qui permet de construire le projet
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.5.0
+        with:
+          folder: build
+          # dossier à déployer, ici le dossier build
+          branch: gh-pages
+          # branche sur laquelle déployer, ici la branche gh-pages
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          # ACCESS_TOKEN : variable d'environnement qui contient le token d'accès
+          # secrets.ACCESS_TOKEN : secret qui contient le token d'accès
