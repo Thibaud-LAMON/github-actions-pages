@@ -1,0 +1,41 @@
+name: Test React App
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "hotfix-*"
+      # déclenche le workflow lorsqu'un commit est effectué sur les branches contenant "hotfix-"
+      - "feature/**"
+      # déclenche le workflow lorsqu'un commit est effectué sur les branches contenant "feature/"
+    # différence en * et ** : * = 1 seul niveau, ** = plusieurs niveaux
+    path-ignore:
+      - "github/workflows/*"
+  # push: déclenche le workflow lorsqu'un commit est effectué sur les branches listées
+  # branches: liste des branches sur lesquelles le workflow est déclenché
+  # path-ignore: liste des chemins de fichiers à ignorer pour le déclenchement du workflow
+  pull_request:
+    types:
+      - opened
+  # pull_request: déclenche le workflow selon le type de pull request
+  # ici : déclenche le workflow lorsqu'une pull request est ouverte
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code
+        uses: actions/checkout@v4
+        # uses: emploi des actions du marketplace de GitHub
+        # actions/checkout@v4 : action qui permet de cloner la dernière version du dépôt
+      - name: Install Node v18
+        uses: actions/setup-node@v4
+        # actions/setup-node@v4 : action qui permet d'installer une version de Node.js
+        with:
+          node-version: 18
+          # version de Node.js à installer, ici la version 18
+      - name: Install dependencies
+        run: npm install
+        # run: npm install : commande qui permet d'installer les dépendances du projet
+      - name: Tests
+        run: npm run test
+        # run: npm run test : commande qui permet de lancer les tests du projet
